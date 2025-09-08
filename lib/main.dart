@@ -2,6 +2,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:med_chat/screens/AskMedicine.dart';
 import 'package:med_chat/screens/HomePage.dart';
+import 'package:med_chat/screens/UserProfilePage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,8 +39,9 @@ class _BottomNavigateState extends State<BottomNavigate> {
     Text("Hello"),
     Text("Hello"),
     Homepage(),
-    Text("Hello"),
     Askmedicine(),
+    Userprofilepage()
+
   ];
   final List<Widget> _navigationitems = [
     const Icon(Icons.add,color: Colors.white,),

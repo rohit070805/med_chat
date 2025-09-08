@@ -28,4 +28,90 @@ PreferredSizeWidget homePageAppBar(  GlobalKey<ScaffoldState> _drawerkey){
   );
 }
 
+Widget normaltextFeild(TextEditingController controller,String label){
+ return  TextField(
+    style: TextStyle(fontSize: 18),
+    controller: controller,
+    maxLines: label=="Medical Details"?8:1,
+    decoration: InputDecoration(
+        alignLabelWithHint: true,
+
+
+
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+                color: Colors.grey,
+                width: 1.5
+            )
+        ),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+                color: Colors.grey,
+                width: 1.5
+            )
+        ),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+                color: Colors.grey,
+                width: 1.5
+            )
+        ),
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.black,fontSize: 16),
+        suffixIcon: Icon(Icons.update),
+        suffixIconColor: AppColors.appColor
+
+
+
+
+    ),
+    readOnly: true,
+
+
+  );
+}
+Widget withPrefixTextFeild(TextEditingController controller,String label,String prefix){
+  return  TextField(
+  style: TextStyle(fontSize: 18),
+  controller: controller,
+  decoration: InputDecoration(
+  border: OutlineInputBorder(
+  borderRadius: BorderRadius.circular(12),
+  borderSide: BorderSide(
+  color: Colors.black,
+  width: 1.5
+  )
+  ),
+  enabledBorder: OutlineInputBorder(
+  borderRadius: BorderRadius.circular(12),
+  borderSide: BorderSide(
+  color: Colors.grey,
+  width: 1.5
+  )
+  ),
+  focusedBorder: OutlineInputBorder(
+  borderRadius: BorderRadius.circular(12),
+  borderSide: BorderSide(
+  color: Colors.grey,
+  width: 1.5
+  )
+  ),
+  labelText: label,
+  prefixText: prefix,
+  prefixStyle: TextStyle(color: Colors.grey),
+
+
+  suffixIcon: Icon(Icons.update),
+  suffixIconColor: AppColors.appColor
+
+  ),
+  readOnly: true,
+
+
+  );
+}
+
 }
