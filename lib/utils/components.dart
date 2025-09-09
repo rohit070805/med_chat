@@ -28,16 +28,13 @@ PreferredSizeWidget homePageAppBar(  GlobalKey<ScaffoldState> _drawerkey){
   );
 }
 
-Widget normaltextFeild(TextEditingController controller,String label){
+Widget normaltextFeild(BuildContext context,TextEditingController controller,String label){
  return  TextField(
     style: TextStyle(fontSize: 18),
     controller: controller,
     maxLines: label=="Medical Details"?8:1,
     decoration: InputDecoration(
         alignLabelWithHint: true,
-
-
-
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
@@ -61,8 +58,50 @@ Widget normaltextFeild(TextEditingController controller,String label){
         ),
         labelText: label,
         labelStyle: TextStyle(color: Colors.black,fontSize: 16),
-        suffixIcon: Icon(Icons.update),
-        suffixIconColor: AppColors.appColor
+        suffix: IconButton(icon:Icon(Icons.update,color: AppColors.appColor,),
+          onPressed: () async{
+  final newValue = await showDialog<String>(
+  context: context,
+  builder: (context) {
+  final tempController = TextEditingController(
+  text: controller.text,
+  );
+  return AlertDialog(
+    backgroundColor: Colors.white,
+  title: Text("Edit $label"),
+  content: TextField(
+  controller: tempController,
+  decoration: InputDecoration(
+  hintText: "Enter new $label",
+  ),
+  ),
+  actions: [
+  TextButton(
+  onPressed: () => Navigator.pop(context),
+  child: Text("Cancel"),
+  ),
+  ElevatedButton(
+    style: ElevatedButton.styleFrom(
+    backgroundColor: AppColors.appColor
+    ),
+  onPressed: () =>
+  Navigator.pop(context, tempController.text),
+  child: Text("Save",style: TextStyle(color: Colors.white),),
+  ),
+  ],
+  );
+  },
+  );
+
+  // If user pressed Save
+  if (newValue != null && newValue.isNotEmpty) {
+  controller.text = newValue;
+  }
+
+
+          },),
+
+
 
 
 
@@ -73,7 +112,7 @@ Widget normaltextFeild(TextEditingController controller,String label){
 
   );
 }
-Widget withPrefixTextFeild(TextEditingController controller,String label,String prefix){
+Widget withPrefixTextFeild(BuildContext context,TextEditingController controller,String label,String prefix){
   return  TextField(
   style: TextStyle(fontSize: 18),
   controller: controller,
@@ -104,8 +143,49 @@ Widget withPrefixTextFeild(TextEditingController controller,String label,String 
   prefixStyle: TextStyle(color: Colors.grey),
 
 
-  suffixIcon: Icon(Icons.update),
-  suffixIconColor: AppColors.appColor
+
+    suffix: IconButton(icon:Icon(Icons.update,color: AppColors.appColor,),
+      onPressed: () async{
+        final newValue = await showDialog<String>(
+          context: context,
+          builder: (context) {
+            final tempController = TextEditingController(
+              text: controller.text,
+            );
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Text("Edit $label"),
+              content: TextField(
+                controller: tempController,
+                decoration: InputDecoration(
+                  hintText: "Enter new $label",
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text("Cancel"),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.appColor
+                  ),
+                  onPressed: () =>
+                      Navigator.pop(context, tempController.text),
+                  child: Text("Save",style: TextStyle(color: Colors.white),),
+                ),
+              ],
+            );
+          },
+        );
+
+        // If user pressed Save
+        if (newValue != null && newValue.isNotEmpty) {
+          controller.text = newValue;
+        }
+
+
+      },),
 
   ),
   readOnly: true,

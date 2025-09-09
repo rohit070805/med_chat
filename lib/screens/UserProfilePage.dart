@@ -35,6 +35,7 @@ class _UserprofilepageState extends State<Userprofilepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: true,
         automaticallyImplyLeading: false,
@@ -46,89 +47,91 @@ class _UserprofilepageState extends State<Userprofilepage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.grey ,
-                    child: CircleAvatar(
-                      radius: 39,
-                      backgroundImage: AssetImage('assets/images/person.png'),
-                      backgroundColor: Colors.grey.shade200,
-                    )
-                ),
-                SizedBox(width: 10,),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("ROHIT KUMAR",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                    Text("rohitdhankhar7347@gmail.com",style: TextStyle(fontSize: 16),)
-                  ],
-                ),
-                Spacer(),
-                IconButton(onPressed: (){}, icon: Icon(Icons.logout_outlined,color: Colors.redAccent,size: 30,))
-              ],
-            ),
-            SizedBox(height: 10,),
-            Divider(thickness: 1,color: Colors.grey,),
-            Text("Basic Details"),
-            Components().normaltextFeild(_nameController, "Name"),
-            SizedBox(width: 10),
-            SizedBox(height: 10,),
-            Row(
-              children: [
-                Expanded(
-                  child: Components().withPrefixTextFeild(_weightController, "Weight", "Kg  ")
-                ),
-                SizedBox(width: 10,),
-                Expanded(
-                  child: Components().withPrefixTextFeild(_heightController, "Height", "CM  ")
-
-                )
-              ]
-
-            ),
-            SizedBox(height: 10,),
-            Row(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Colors.grey ,
+                      child: CircleAvatar(
+                        radius: 39,
+                        backgroundImage: AssetImage('assets/images/person.png'),
+                        backgroundColor: Colors.grey.shade200,
+                      )
+                  ),
+                  SizedBox(width: 10,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("ROHIT KUMAR",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                      Text("rohitdhankhar7347@gmail.com",style: TextStyle(fontSize: 16),)
+                    ],
+                  ),
+                  Spacer(),
+                  IconButton(onPressed: (){}, icon: Icon(Icons.logout_outlined,color: Colors.redAccent,size: 30,))
+                ],
+              ),
+              SizedBox(height: 10,),
+              Divider(thickness: 1,color: Colors.grey,),
+              Text("Basic Details"),
+              Components().normaltextFeild(context,_nameController, "Name"),
+              SizedBox(width: 10),
+              SizedBox(height: 10,),
+              Row(
                 children: [
                   Expanded(
-                    child: Components().normaltextFeild(_bloodgrpController, "Blood Group"),
-
+                    child: Components().withPrefixTextFeild(context,_weightController, "Weight", "Kg  ")
                   ),
                   SizedBox(width: 10,),
                   Expanded(
-                    child: Components().normaltextFeild(_ageController, "Age")
+                    child: Components().withPrefixTextFeild(context,_heightController, "Height", "CM  ")
+          
                   )
                 ]
-
-            ),
-            SizedBox(height: 10,),
-            Row(
-              children: [
-                Expanded(
-                  flex: 5,
-                  child: Components().withPrefixTextFeild(_contactController, "Contact Number", "+91  ")
-                ),
-                SizedBox(width: 10,),
-
-                Expanded(
-                  flex: 2,
-                  child: Components().normaltextFeild(_genderController, "Gender"),
-                ),
-              ],
-            ),
-            SizedBox(height: 10,),
-            Divider(thickness: 1,color: Colors.grey,),
-            SizedBox(height: 10,),
-
-
-            Components().normaltextFeild(_medicalDetailsController, "Medical Details"),
-
-
-          ],
+          
+              ),
+              SizedBox(height: 10,),
+              Row(
+                  children: [
+                    Expanded(
+                      child: Components().normaltextFeild(context,_bloodgrpController, "Blood Group"),
+          
+                    ),
+                    SizedBox(width: 10,),
+                    Expanded(
+                      child: Components().normaltextFeild(context,_ageController, "Age")
+                    )
+                  ]
+          
+              ),
+              SizedBox(height: 10,),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: Components().withPrefixTextFeild(context,_contactController, "Contact Number", "+91  ")
+                  ),
+                  SizedBox(width: 10,),
+          
+                  Expanded(
+                    flex: 2,
+                    child: Components().normaltextFeild(context,_genderController, "Gender"),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10,),
+              Divider(thickness: 1,color: Colors.grey,),
+              SizedBox(height: 10,),
+          
+          
+              Components().normaltextFeild(context,_medicalDetailsController, "Medical Details"),
+          
+          
+            ],
+          ),
         ),
       )
     );
