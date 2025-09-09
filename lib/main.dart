@@ -2,6 +2,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:med_chat/screens/AskMedicine.dart';
 import 'package:med_chat/screens/HomePage.dart';
+import 'package:med_chat/screens/SearchDoctorPage.dart';
 import 'package:med_chat/screens/UserProfilePage.dart';
 
 void main() {
@@ -37,7 +38,7 @@ class _BottomNavigateState extends State<BottomNavigate> {
   int myIndex = 2;
   List<Widget> _widgetList = [
     Text("Hello"),
-    Text("Hello"),
+    Searchdoctorpage(),
     Homepage(),
     Askmedicine(),
     Userprofilepage()

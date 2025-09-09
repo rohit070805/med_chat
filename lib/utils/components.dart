@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:med_chat/screens/DoctorDetailsPage.dart';
 import 'package:med_chat/utils/colors.dart';
 class Components{
 PreferredSizeWidget homePageAppBar(  GlobalKey<ScaffoldState> _drawerkey){
@@ -193,5 +196,148 @@ Widget withPrefixTextFeild(BuildContext context,TextEditingController controller
 
   );
 }
+
+Widget categoryCard(String title, String subtitle,
+    {required Color color, required Color lightColor}) {
+
+  return Container(
+    height: 230,
+    width:150,
+    child: AspectRatio(
+      aspectRatio: 6 / 8,
+      child: Container(
+
+        margin: EdgeInsets.only(left :10,right: 5, bottom: 20, top: 10),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              offset: Offset(4, 4),
+              blurRadius: 10,
+              color: lightColor.withOpacity(.8),
+            )
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          child: Container(
+
+            child: Stack(
+              children: <Widget>[
+                Positioned(
+                  top: -20,
+                  left: -20,
+                  child: CircleAvatar(
+                    backgroundColor: lightColor,
+                    radius: 60,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0,left: 12),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Flexible(
+                        child: Text(title
+                          ,style: TextStyle(color: Colors.white,fontSize: 24,fontWeight: FontWeight.w600,letterSpacing: 3),),
+                      ),
+
+                      Flexible(
+                        child: Text(
+                          subtitle,style: TextStyle(color: Colors.white,fontSize: 21,fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        )
+      ),
+    ),
+  );
+}
+Color randomColor() {
+  var random = Random();
+  final colorList = [
+
+   AppColors.orange,
+    AppColors.green,
+    AppColors.grey,
+    AppColors.lightOrange,
+    AppColors.skyBlue,
+    AppColors.titleTextColor,
+    Colors.red,
+    Colors.brown,
+    AppColors.purpleExtraLight,
+    AppColors.skyBlue,
+  ];
+  var color = colorList[random.nextInt(colorList.length)];
+  return color;
+}
+
+
+Widget doctorTile(BuildContext context,String title,String subtitle) {
+  return Container(
+
+    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.all(Radius.circular(20)),
+      boxShadow: <BoxShadow>[
+        BoxShadow(
+          offset: Offset(4, 4),
+          blurRadius: 10,
+          color: AppColors.grey.withOpacity(.4),
+        ),
+        BoxShadow(
+          offset: Offset(-3, 0),
+          blurRadius: 15,
+          color: AppColors.grey.withOpacity(.1),
+        )
+      ],
+    ),
+    child: Container(
+      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+      child: ListTile(
+        onTap: (){
+          Navigator.push(context, MaterialPageRoute(builder: (builder)=>Doctordetailspage()));
+        },
+        contentPadding: EdgeInsets.all(0),
+        leading: ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(13)),
+          child: Container(
+            height: 55,
+            width: 55,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: randomColor(),
+            ),
+            child: Image.asset(
+              "assets/images/doctor.png",
+              height: 50,
+              width: 50,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+        title: Text(title, style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600)),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(color: Colors.grey,fontWeight: FontWeight.w500,fontSize: 16),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_right,
+          size: 30,
+          color: AppColors.appColor,
+        ),
+      ),
+    )
+  );
+}
+
 
 }
