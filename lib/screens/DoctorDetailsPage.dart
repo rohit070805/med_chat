@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:med_chat/screens/AskForAppointment.dart';
 import 'package:med_chat/utils/colors.dart';
 class Doctordetailspage extends StatefulWidget {
   const Doctordetailspage({super.key});
@@ -107,7 +108,7 @@ class _DoctordetailspageState extends State<Doctordetailspage> {
                               backgroundColor: AppColors.appColor
                                                   ),
                              onPressed: () {
-
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>Askforappointment()));
                              },
                              child: Text(
                                "Make an appointment",
