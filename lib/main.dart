@@ -1,5 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:med_chat/screens/AppointmentsPage.dart';
 import 'package:med_chat/screens/AskMedicine.dart';
 import 'package:med_chat/screens/HomePage.dart';
 import 'package:med_chat/screens/SearchDoctorPage.dart';
@@ -37,23 +38,25 @@ class BottomNavigate extends StatefulWidget {
 class _BottomNavigateState extends State<BottomNavigate> {
   int myIndex = 2;
   List<Widget> _widgetList = [
-    Text("Hello"),
-    Searchdoctorpage(),
+
     Homepage(),
     Askmedicine(),
+    Searchdoctorpage(),
+    Appointmentspage(),
     Userprofilepage()
 
   ];
   final List<Widget> _navigationitems = [
-    const Icon(Icons.add,color: Colors.white,),
-    const Icon(Icons.travel_explore_outlined,color: Colors.white,),
-    const Icon(Icons.home,color: Colors.white,),
-    const Icon(Icons.people,color: Colors.white,),
-    const Icon(Icons.ac_unit,color: Colors.white,)
+    const Icon(Icons.smart_toy_outlined,color: Colors.white,size: 25,),
+    const Icon(Icons.local_pharmacy_outlined,color: Colors.white,size: 25),
+    const Icon(Icons.home,color: Colors.white,size: 25),
+    const Icon(Icons.calendar_month_sharp,color: Colors.white,size: 25),
+    const Icon(Icons.person,color: Colors.white,size: 25)
   ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: _widgetList[myIndex],
       bottomNavigationBar: CurvedNavigationBar(
         index: myIndex,
