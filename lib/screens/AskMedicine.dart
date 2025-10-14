@@ -6,6 +6,7 @@ import 'package:lottie/lottie.dart';
 import 'package:med_chat/screens/MedicineDetails.dart';
 import 'package:med_chat/utils/components.dart';
 
+import '../data/services/api_service.dart';
 import '../utils/colors.dart';
  class Askmedicine extends StatefulWidget {
    const Askmedicine({super.key});
@@ -16,6 +17,41 @@ import '../utils/colors.dart';
 
  class _AskmedicineState extends State<Askmedicine> {
    File? _pickedImage=null;
+
+   bool _isLoading = false;
+
+   final ApiService _apiService = ApiService();
+
+
+
+   void _getMedicineDetails() async {
+     if (_pickedImage == null) return;
+
+     setState(() {
+       _isLoading = true;
+     });
+
+     final details = await _apiService.getMedicineDetails(_pickedImage!);
+
+     setState(() {
+       _isLoading = false;
+     });
+
+     if (details.containsKey('error')) {
+       ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(content: Text(details['error'])),
+       );
+     } else {
+       Navigator.push(
+         context,
+         MaterialPageRoute(
+           builder: (context) => Medicinedetails(
+             medicineData: details, // Pass the dynamic data
+           ),
+         ),
+       );
+     }
+   }
 
    Future<void> _pickImage(ImageSource source) async {
      final picker = ImagePicker();
@@ -108,10 +144,7 @@ import '../utils/colors.dart';
                              });
                            },
                                icon: Icon(Icons.arrow_back_ios)),
-                           ElevatedButton(onPressed: (){
-                             Navigator.push(context,
-                                 MaterialPageRoute(builder: (context)=>Medicinedetails()));
-                           },
+                           ElevatedButton(onPressed: _getMedicineDetails,
                                style: ElevatedButton.styleFrom(
                                  backgroundColor: AppColors.appColor
                                ),

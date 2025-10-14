@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "211503764801",
+    "project_id": "med-chat-33f7a",
+    "storage_bucket": "med-chat-33f7a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:211503764801:android:591bbcea3cf669d47ebdc0",
+        "android_client_info": {
+          "package_name": "com.example.med_chat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFXsPRw7cqTbWRyK4L66ip0d6mA3FpGtA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

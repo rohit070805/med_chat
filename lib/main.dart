@@ -1,12 +1,29 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:med_chat/screens/AppointmentsPage.dart';
 import 'package:med_chat/screens/AskMedicine.dart';
 import 'package:med_chat/screens/HomePage.dart';
 import 'package:med_chat/screens/SearchDoctorPage.dart';
 import 'package:med_chat/screens/UserProfilePage.dart';
+import 'package:med_chat/screens/loginPage.dart';
+import 'package:med_chat/screens/signUpScreen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  await Firebase.initializeApp(
+
+    // options: DefaultFirebaseOptions.currentPlatform, // ONLY if you used the CLI
+  );
+  //await FirebaseAuth.instance.getInitialUser();
+  //listModels();
   runApp(const MyApp());
 }
 
@@ -25,7 +42,7 @@ debugShowCheckedModeBanner: false,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: BottomNavigate(),
+      home: Signupscreen(),
     );
   }
 }

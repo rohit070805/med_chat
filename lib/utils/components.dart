@@ -29,8 +29,94 @@ PreferredSizeWidget homePageAppBar(  GlobalKey<ScaffoldState> _drawerkey){
     ),
     title: Text("AI BOT",style: TextStyle(color: Colors.white,fontSize: 30),),
   );
+}Widget signUpwithPrefixTextFeild(BuildContext context,TextEditingController controller,String label,String prefix){
+  return  TextField(
+    style: TextStyle(fontSize: 18),
+    controller: controller,
+    decoration: InputDecoration(
+      border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+              color: Colors.black,
+              width: 1.5
+          )
+      ),
+      enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+              color: Colors.grey,
+              width: 1.5
+          )
+      ),
+      focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+              color: Colors.grey,
+              width: 1.5
+          )
+      ),
+      labelText: label,
+      prefixText: prefix,
+
+      labelStyle: TextStyle(color: Colors.black,fontSize: 16),
+
+      prefixStyle: TextStyle(color: Colors.grey),
+
+
+
+
+
+    ),
+
+
+
+  );
 }
 
+
+Widget signUptextFeild(BuildContext context,TextEditingController controller,String label){
+  return  TextField(
+    style: TextStyle(fontSize: 18),
+    controller: controller,
+
+    decoration: InputDecoration(
+      alignLabelWithHint: true,
+      border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+              color: Colors.grey,
+              width: 1.5
+          )
+      ),
+      enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+              color: Colors.grey,
+              width: 1.5
+          )
+      ),
+      focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+              color: Colors.grey,
+              width: 1.5
+          )
+      ),
+      labelText: label,
+      labelStyle: TextStyle(color: Colors.black,fontSize: 16),
+
+
+
+
+
+
+
+    ),
+
+
+
+  );
+}
 Widget normaltextFeild(BuildContext context,TextEditingController controller,String label){
  return  TextField(
     style: TextStyle(fontSize: 18),
