@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:med_chat/main.dart';
+import 'package:med_chat/screens/loginPage.dart';
 import 'package:med_chat/utils/colors.dart';
 
 import '../data/models/patient_model.dart';
@@ -149,9 +150,10 @@ class _SignupscreenState extends State<Signupscreen> {
     return Container(
 
         child: Scaffold(
+
           backgroundColor: Colors.white,
           body: Padding(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.only(top: 30,left: 15,right: 15,bottom: 15),
             child: Column(
               children: [
                 Expanded(
@@ -243,11 +245,12 @@ class _SignupscreenState extends State<Signupscreen> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text("Don't have a Account?",style: TextStyle(fontSize: 16),),
+                                const Text("Already have a Account?",style: TextStyle(fontSize: 16),),
                                 InkWell(
                                     onTap: (){
+                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Loginpage()));
                                     },
-                                    child: const Text("Sign Up!",style: TextStyle(fontSize: 18,color: Colors.blue),))
+                                    child: const Text("Log In!",style: TextStyle(fontSize: 18,color: Colors.blue),))
                               ],
                             ),
                             SizedBox(

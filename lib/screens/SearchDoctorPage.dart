@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:med_chat/utils/colors.dart';
 import 'package:med_chat/utils/components.dart';
+
+import '../data/models/doctor_model.dart';
+import '../data/services/firestore_services.dart';
+import 'doctorsListPage.dart';
 class Searchdoctorpage extends StatefulWidget {
   const Searchdoctorpage({super.key});
 
@@ -9,37 +13,39 @@ class Searchdoctorpage extends StatefulWidget {
 }
 
 class _SearchdoctorpageState extends State<Searchdoctorpage> {
+  final GlobalKey<ScaffoldState> drawerkey = GlobalKey();
+  final FirestoreService _firestoreService = FirestoreService();
+
+  // State variables for loading status and doctors list
+  bool _isLoading = true;
+  List<Doctor> _doctors = [];
+
   @override
+  void initState() {
+    super.initState();
+    // Fetch doctors when the page is first loaded
+    _fetchDoctors();
+  }
 
-  final List<String> doctorTitles = [
-    "Dr. Arjun Mehta",
-    "Dr. Priya Sharma",
-    "Dr. Rohit Kapoor",
-    "Dr. Neha Verma",
-    "Dr. Sameer Khanna",
-    "Dr. Anjali Rao",
-    "Dr. Vikram Sinha",
-    "Dr. Kavita Iyer",
-  ];
+  Future<void> _fetchDoctors() async {
+    final doctorsList = await _firestoreService.getAllDoctors();
+    if (mounted) {
+      setState(() {
+        _doctors = doctorsList;
+        _isLoading = false;
+      });
+    }
+  }
 
-
-  final List<String> doctorSubtitles = [
-    "Physician / General Medicine",
-    "Pediatrician",
-    "Dermatologist",
-    "Orthopedic Surgeon",
-    "Cardiologist",
-    "Ophthalmologist",
-    "Gynecologist",
-    "Dental Surgeon",
-  ];
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(backgroundColor: Colors.white,
       toolbarHeight: 10,
       ),
-      body: Padding(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
         padding: const EdgeInsets.only(top: 15.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,18 +102,12 @@ class _SearchdoctorpageState extends State<Searchdoctorpage> {
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 10,),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text("Category",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500),),
-                          Text("See All",style: TextStyle(fontSize:18,color: AppColors.appColor),)
-                        ],
-                      ),
+                      child: Text("Category",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500),),
                     ),
                     SizedBox(
                       height: 230,
@@ -115,10 +115,10 @@ class _SearchdoctorpageState extends State<Searchdoctorpage> {
                         scrollDirection: Axis.horizontal,
                         children: [
               
-                          Components().categoryCard("General", "30+", color: Color(0xff4cd1bc), lightColor: Color(0xff5ed6c3)),
-                          Components().categoryCard("Child", "20+", color: Color(0xff71b4fb), lightColor: Color(0xff7fbcfb)),
-                          Components().categoryCard("Skin", "80+", color:Color(0xfffa8c73), lightColor: Color(0xfffa9881)),
-                          Components().categoryCard("Bones", "50+", color: Color(0xff8873f4), lightColor: Color(0xff9489f4)),
+                          _buildSingleCategoryCard(title: 'General', categoryKey: 'General', color: Color(0xff4cd1bc), lightColor: Color(0xff5ed6c3)),
+                          _buildSingleCategoryCard(title: 'Skin', categoryKey: 'Skin', color: Color(0xff71b4fb), lightColor: Color(0xff7fbcfb)),
+                          _buildSingleCategoryCard(title: 'Bones', categoryKey: 'Bones', color:Color(0xfffa8c73), lightColor: Color(0xfffa9881)),
+                          _buildSingleCategoryCard(title: 'Child', categoryKey: 'Child', color: Color(0xff8873f4), lightColor: Color(0xff9489f4)),
               
                         ],
                       ),
@@ -129,8 +129,18 @@ class _SearchdoctorpageState extends State<Searchdoctorpage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text("Top Doctors",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500),),
-                          Icon(Icons.sort,color: AppColors.appColor,size: 30,)
+                          Text("All Doctors",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500),),
+                          IconButton(icon:Icon(Icons.sort,color: AppColors.appColor,size: 30,),
+                            onPressed: (){
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const DoctorListPage(
+                                      title: 'All Doctors'),
+                                ),
+                              );
+                            },
+                          )
                         ],
                       ),
                     ),
@@ -139,9 +149,9 @@ class _SearchdoctorpageState extends State<Searchdoctorpage> {
                       shrinkWrap: true,
                       itemBuilder: (context,index){
               
-                        return Components().doctorTile(context,doctorTitles[index], doctorSubtitles[index]);
+                        return Components().doctorTile(context,_doctors[index].name, _doctors[index].category,_doctors[index].uid);
                       },
-                      itemCount: doctorTitles.length,
+                      itemCount: _doctors.length,
                     ),
                   ],
                 ),
@@ -151,6 +161,41 @@ class _SearchdoctorpageState extends State<Searchdoctorpage> {
            
 
             ],
+        ),
+      ),
+    );
+  }
+  Widget _buildSingleCategoryCard({
+    required String title,
+    required String categoryKey,
+    required Color color,
+    required Color lightColor,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DoctorListPage(title: title, category: categoryKey),
+            ),
+          );
+        },
+        child: FutureBuilder<int>(
+          future: _firestoreService.getDoctorCountByCategory(categoryKey),
+          builder: (context, snapshot) {
+            String countText = '...'; // This becomes the subtitle
+            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+              countText = '${snapshot.data}+'; // The final subtitle
+            }
+            // Your categoryCard is called here with the final subtitle
+            return Components().categoryCard(
+                title,
+                countText, // Passed as the subtitle
+                color: color,
+                lightColor: lightColor
+            );
+          },
         ),
       ),
     );

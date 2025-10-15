@@ -1,5 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:med_chat/screens/HomePage.dart';
+import 'package:med_chat/screens/signUpScreen.dart';
 import 'package:med_chat/utils/colors.dart';
+
+import '../data/services/auth_services.dart';
+import '../main.dart';
 
 class Loginpage extends StatefulWidget {
   const Loginpage({super.key});
@@ -9,15 +15,24 @@ class Loginpage extends StatefulWidget {
 }
 
 class _LoginpageState extends State<Loginpage> {
+  final AuthService _authService = AuthService();
+
   TextEditingController email = TextEditingController();
   TextEditingController pass = TextEditingController();
+
+  @override
+  void dispose() {
+    email.dispose();
+    pass.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     var mediaquery = MediaQuery.of(context);
     return Container(
         
         child: Scaffold(
-         // backgroundColor: Colors.transparent,
+         backgroundColor: Colors.white,
           body: Container(
               margin: EdgeInsets.only(top: mediaquery.size.height*0.39,left: 50,right: 50),
               child: SingleChildScrollView(
@@ -82,14 +97,49 @@ class _LoginpageState extends State<Loginpage> {
                             const Text("Don't have a Account?",style: TextStyle(fontSize: 16),),
                             InkWell(
                                 onTap: (){
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Signupscreen()));
                                   },
                                 child: const Text("Sign Up!",style: TextStyle(fontSize: 18,color: Colors.blue),))
                           ],
                         ),
                         SizedBox(
                           height: 60,
-                          child: ElevatedButton(onPressed: (){
+                          child: ElevatedButton(onPressed: () async {
+                            // Get email and password from text controllers
+                            final String userEmail = email.text.trim();
+                            final String userPassword = pass.text.trim();
 
+                            // Basic check for empty fields
+                            if (userEmail.isEmpty || userPassword.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Please fill all fields.')),
+                              );
+                              return; // Stop the function
+                            }
+
+                            // Call the signIn method from your service
+                            UserCredential? userCredential =
+                            await _authService.signIn(
+                              email: userEmail,
+                              password: userPassword,
+                            );
+
+                            // Check the result
+                            if (userCredential != null) {
+                              // Login successful!
+                              // You can navigate to the home screen here
+                              print(
+                                  '✅ Login successful for user: ${userCredential.user?.email}');
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>BottomNavigate()));
+                              } else {
+                              // Login failed. Show an error message.
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Login Failed. Check your credentials.')),
+                              );
+                            }
                           },
                               style:  ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.appColor,

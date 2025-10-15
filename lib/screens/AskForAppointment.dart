@@ -1,16 +1,90 @@
 import 'package:flutter/material.dart';
 import 'package:med_chat/utils/components.dart';
+import 'package:uuid/uuid.dart';
 
+import '../data/models/appointment_model.dart';
+import '../data/models/doctor_model.dart';
+import '../data/models/patient_model.dart';
+import '../data/services/firestore_services.dart';
 import '../utils/colors.dart';
 class Askforappointment extends StatefulWidget {
-  const Askforappointment({super.key});
+  final Doctor doctor;
+  const Askforappointment({super.key, required this.doctor});
 
   @override
   State<Askforappointment> createState() => _AskforappointmentState();
 }
 
 class _AskforappointmentState extends State<Askforappointment> {
-  final TextEditingController Issuecontroller = TextEditingController();
+  final TextEditingController _issueController = TextEditingController();
+  final FirestoreService _firestoreService = FirestoreService();
+  bool _isLoading = true;
+  Patient? _currentPatient;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCurrentPatient();
+  }
+
+  Future<void> _fetchCurrentPatient() async {
+    final patientData = await _firestoreService.getCurrentPatient();
+    if (mounted) {
+      setState(() {
+        _currentPatient = patientData;
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _submitAppointment() async {
+    final patient = _currentPatient;
+    if (patient == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error: Patient data not available.')),
+      );
+      return;
+    }
+    if (_issueController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please describe your medical issue.')),
+      );
+      return;
+    }
+    setState(() { _isLoading = true; });
+
+    try {
+      var uuid = const Uuid();
+      final newAppointment = Appointment(
+        appointmentId: uuid.v4(),
+        patientId: patient.uid,
+        doctorId: widget.doctor.uid,
+        status: 'pending',
+        patientsConcern: _issueController.text.trim(),
+        appointmentDate: null,
+        doctorsMessage: '',
+      );
+      await _firestoreService.createAppointment(newAppointment);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Appointment request sent successfully!')),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to send request: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() { _isLoading = false; });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,9 +149,9 @@ class _AskforappointmentState extends State<Askforappointment> {
                     ),
                   ),
                 ),
-                title: Text("Arjun Mehta", style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600)),
+                title: Text(widget.doctor.name, style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600)),
                 subtitle: Text(
-                  "Heart Surgeon",
+                  widget.doctor.category,
                   style: TextStyle(color: Colors.grey,fontWeight: FontWeight.w500,fontSize: 16),
                 ),
 
@@ -92,7 +166,11 @@ class _AskforappointmentState extends State<Askforappointment> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 elevation: 4,
-                child: Column(
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _currentPatient == null
+                    ? const Center(child: Text('Could not load patient data.'))
+                    : Column(
                   children: [
                     ListTile(
                       leading:   CircleAvatar(
@@ -104,13 +182,13 @@ class _AskforappointmentState extends State<Askforappointment> {
                             backgroundColor: Colors.grey.shade200,
                           )
                       ),
-                      title: Text("Rohit Kumar",style: TextStyle(fontSize: 18,letterSpacing: 2,fontWeight: FontWeight.w400),),
-                      subtitle: Text("Age: 20, Male"),
+                      title: Text(_currentPatient!.name,style: TextStyle(fontSize: 18,letterSpacing: 2,fontWeight: FontWeight.w400),),
+                      subtitle: Text("Age: ${_currentPatient!.age}, ${_currentPatient!.gender}"),
                     ),
                     Divider(),
                     ListTile(
                       leading: Icon(Icons.email),
-                      title: Text("rohitdhankhar7347@gmail.com"),
+                      title: Text(_currentPatient!.email),
                     ),
                     Row(
 
@@ -119,21 +197,21 @@ class _AskforappointmentState extends State<Askforappointment> {
                           flex: 1,
                           child: ListTile(
                             leading: Icon(Icons.water_drop,color: Colors.red,),
-                            title: Text("AB+"),
+                            title: Text(_currentPatient!.bloodGroup!),
                           ),
                         ),
                         Expanded(
                           flex: 1,
                           child: ListTile(
                             leading: Icon(Icons.height,color: Colors.black54,),
-                            title: Text("170 cm"),
+                            title: Text(_currentPatient!.height.toString()),
                           ),
                         ),
                         Expanded(
                           flex: 1,
                           child: ListTile(
                             leading: Icon(Icons.monitor_weight_outlined,color: Colors.black54,),
-                            title: Text("60 kg"),
+                            title: Text(_currentPatient!.weight.toString()),
                           ),
                         ),
                       ],
@@ -150,7 +228,7 @@ class _AskforappointmentState extends State<Askforappointment> {
               ),
           TextField(
           style: TextStyle(fontSize: 18),
-          controller: Issuecontroller,
+          controller: _issueController,
           maxLines: 8,
           decoration: InputDecoration(
             alignLabelWithHint: true,
@@ -200,8 +278,8 @@ class _AskforappointmentState extends State<Askforappointment> {
                       backgroundColor: AppColors.appColor
                   ),
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Askforappointment()));
-                  },
+                    _submitAppointment();
+                   },
                   child: Text(
                     "Submit Request",
                     style: TextStyle(color: Colors.white,letterSpacing: 2,fontWeight: FontWeight.w400,fontSize: 18),

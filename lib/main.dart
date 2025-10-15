@@ -8,6 +8,7 @@ import 'package:med_chat/screens/AskMedicine.dart';
 import 'package:med_chat/screens/HomePage.dart';
 import 'package:med_chat/screens/SearchDoctorPage.dart';
 import 'package:med_chat/screens/UserProfilePage.dart';
+import 'package:med_chat/screens/auth_gate.dart';
 import 'package:med_chat/screens/loginPage.dart';
 import 'package:med_chat/screens/signUpScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -42,7 +43,7 @@ debugShowCheckedModeBanner: false,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Signupscreen(),
+      home:AuthGate(),
     );
   }
 }

@@ -4,10 +4,10 @@ class Appointment {
   final String appointmentId;
   final String patientId;
   final String doctorId;
-  final String status; // 'pending', 'approved', 'cancelled'
-  final String patientsConcern; // New field for the patient's concern
-  final DateTime appointmentDate; // Renamed to clarify as 'data&time'
-  final String doctorsMessage; // New field for the doctor's message
+  final String status;
+  final String patientsConcern;
+  final DateTime? appointmentDate; // This should be nullable
+  final String doctorsMessage;
 
   Appointment({
     required this.appointmentId,
@@ -15,32 +15,33 @@ class Appointment {
     required this.doctorId,
     required this.status,
     required this.patientsConcern,
-    required this.appointmentDate,
+    this.appointmentDate, // Not required
     required this.doctorsMessage,
   });
 
-  // Factory constructor to create an Appointment from a Firestore document
   factory Appointment.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return Appointment(
-      appointmentId: doc.id,
+      appointmentId: data['appointmentId'] ?? doc.id,
       patientId: data['patientId'] ?? '',
       doctorId: data['doctorId'] ?? '',
       status: data['status'] ?? 'pending',
       patientsConcern: data['patientsConcern'] ?? '',
-      appointmentDate: (data['appointmentDate'] as Timestamp).toDate(),
+      // **FIX 1:** Safely handle a null date from Firestore
+      appointmentDate: (data['appointmentDate'] as Timestamp?)?.toDate(),
       doctorsMessage: data['doctorsMessage'] ?? '',
     );
   }
 
-  // Method to convert Appointment object to a map for Firestore
   Map<String, dynamic> toMap() {
     return {
+      'appointmentId': appointmentId,
       'patientId': patientId,
       'doctorId': doctorId,
       'status': status,
       'patientsConcern': patientsConcern,
-      'appointmentDate': Timestamp.fromDate(appointmentDate),
+      // **FIX 2:** Safely handle a null date when writing to Firestore
+      'appointmentDate': appointmentDate != null ? Timestamp.fromDate(appointmentDate!) : null,
       'doctorsMessage': doctorsMessage,
     };
   }

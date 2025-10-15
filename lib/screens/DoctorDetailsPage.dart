@@ -1,22 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:med_chat/screens/AskForAppointment.dart';
 import 'package:med_chat/utils/colors.dart';
+
+import '../data/models/doctor_model.dart';
+import '../data/services/firestore_services.dart';
 class Doctordetailspage extends StatefulWidget {
-  const Doctordetailspage({super.key});
+  final String doctorId;
+  const Doctordetailspage({super.key, required this.doctorId});
 
   @override
   State<Doctordetailspage> createState() => _DoctordetailspageState();
 }
 
 class _DoctordetailspageState extends State<Doctordetailspage> {
+  final FirestoreService _firestoreService = FirestoreService();
+
+  // 2. State variables for loading and doctor data
+  bool _isLoading = true;
+  Doctor? doctor;
+
+  @override
+  void initState() {
+    super.initState();
+    // 3. Fetch the doctor's details when the page loads
+    _fetchDoctorDetails();
+  }
+
+  Future<void> _fetchDoctorDetails() async {
+    final doctorData = await _firestoreService.getDoctorById(widget.doctorId);
+    if (mounted) {
+      setState(() {
+        doctor = doctorData;
+        _isLoading = false;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
-    final String doctorAbout =
-        "Dr. Arjun Mehta is a trusted Physician with over 15 years of experience in general medicine. He specializes in diagnosing and managing common illnesses such as fever, diabetes, hypertension, and seasonal infections. Dr. Mehta is well known for his patient-friendly approach and clear guidance on preventive healthcare. His focus is on providing accurate diagnoses, effective treatments, and helping patients maintain long-term wellness.";
-
-    return Scaffold(
+   return Scaffold(
       backgroundColor: AppColors.extraLightBlue,
-      body: SafeArea(
+      body:_isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : doctor == null
+          ? const Center(child: Text('Doctor not found.'))
+          :  SafeArea(
         bottom: false,
         child: Stack(
           children: <Widget>[
@@ -53,7 +80,7 @@ class _DoctordetailspageState extends State<Doctordetailspage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               Text(
-                                "Dr. Arjun Mehta",
+                                "Dr. ${doctor!.name.toString()}",
                                 style: TextStyle(fontSize: 30,letterSpacing:2,fontWeight: FontWeight.w600,color: AppColors.appColor),
                               ),
                               SizedBox(
@@ -65,7 +92,7 @@ class _DoctordetailspageState extends State<Doctordetailspage> {
 
                             ],
                           ),
-                          subtitle: Text("Heart Surgeon"
+                          subtitle: Text(doctor!.category.toString()
                               ,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,letterSpacing: 3),
                           ),
                         ),
@@ -77,13 +104,17 @@ class _DoctordetailspageState extends State<Doctordetailspage> {
                           style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500,letterSpacing: 3),
                         ),
                          Text(
-                            "Experience:13 Yr.",
+                            "Experience:${doctor!.experienceInYears}",
                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,letterSpacing: 3),
                           ),
-                         Text("Education: Manipal University 2012",
+                         Text("Qualification: ${doctor!.qualification.toString()}",
                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,letterSpacing: 3),
 
 
+                        ),
+                        Divider(
+                          thickness: .6,
+                          color: AppColors.grey,
                         ),
 
 
@@ -92,8 +123,7 @@ class _DoctordetailspageState extends State<Doctordetailspage> {
 
 
 
-                        Text(
-                          "${doctorAbout}",
+                        Text(doctor!.about.toString(),
                           style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,letterSpacing: 2),
 
 
@@ -108,7 +138,7 @@ class _DoctordetailspageState extends State<Doctordetailspage> {
                               backgroundColor: AppColors.appColor
                                                   ),
                              onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>Askforappointment()));
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>Askforappointment(doctor: doctor!,)));
                              },
                              child: Text(
                                "Make an appointment",
