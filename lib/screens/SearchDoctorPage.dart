@@ -3,6 +3,7 @@ import 'package:med_chat/utils/colors.dart';
 import 'package:med_chat/utils/components.dart';
 
 import '../data/models/doctor_model.dart';
+import '../data/models/patient_model.dart';
 import '../data/services/firestore_services.dart';
 import 'doctorsListPage.dart';
 class Searchdoctorpage extends StatefulWidget {
@@ -20,13 +21,34 @@ class _SearchdoctorpageState extends State<Searchdoctorpage> {
   bool _isLoading = true;
   List<Doctor> _doctors = [];
 
+  Patient? _patient;
   @override
   void initState() {
     super.initState();
     // Fetch doctors when the page is first loaded
     _fetchDoctors();
+    _loadUserData();
   }
+  Future<void> _loadUserData() async {
+    // Call the new method to get the current patient's data
+    final patientData = await _firestoreService.getCurrentPatient();
 
+    // Check if data was successfully fetched and the widget is still on screen
+    if (patientData != null && mounted) {
+      setState(() {
+        _patient = patientData; // Store the patient object
+
+
+
+        _isLoading = false; // Stop loading
+      });
+    } else if (mounted) {
+      // Handle cases where the user data couldn't be loaded
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
   Future<void> _fetchDoctors() async {
     final doctorsList = await _firestoreService.getAllDoctors();
     if (mounted) {
@@ -63,7 +85,7 @@ class _SearchdoctorpageState extends State<Searchdoctorpage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    child: Text("Rohit Kumar",style: TextStyle(fontSize: 35,letterSpacing: 3,color: AppColors.appColor,fontWeight: FontWeight.w500),),
+                    child: _isLoading?CircularProgressIndicator():Text(_patient!.name,style: TextStyle(fontSize: 35,letterSpacing: 3,color: AppColors.appColor,fontWeight: FontWeight.w500),),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),

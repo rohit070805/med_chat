@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:med_chat/data/models/appointment_model.dart';
 import 'package:med_chat/data/models/doctor_model.dart';
 import 'package:med_chat/data/models/patient_model.dart';
-
+import 'package:med_chat/data/models/appointment_details_model.dart';
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
@@ -11,7 +11,60 @@ class FirestoreService {
   final String _patientsCollection = 'patients';
   final String _doctorsCollection = 'doctors';
   final String _appointmentsSubCollection = 'appointments';
+  Future<List<AppointmentDetails>> getMyAppointmentDetails() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return [];
 
+    try {
+      // Step A: Get all appointments for the current patient
+      final appointmentsSnapshot = await _db
+          .collection('appointments')
+          .where('patientId', isEqualTo: user.uid)
+          .get();
+
+      final appointments = appointmentsSnapshot.docs
+          .map((doc) => Appointment.fromFirestore(doc))
+          .toList();
+
+      if (appointments.isEmpty) return [];
+
+      // Step B: Get the unique doctor IDs from the appointments
+      final doctorIds = appointments.map((appt) => appt.doctorId).toSet().toList();
+
+      // Step C: Fetch the details for all those doctors in one go
+      final doctorsSnapshot = await _db
+          .collection(_doctorsCollection)
+          .where('uid', whereIn: doctorIds)
+          .get();
+
+      final doctors = doctorsSnapshot.docs
+          .map((doc) => Doctor.fromFirestore(doc))
+          .toList();
+
+      final doctorMap = {for (var doc in doctors) doc.uid: doc};
+
+      // Step D: Combine the appointments and doctors into our helper model
+      return appointments
+          .map((appt) => AppointmentDetails(
+        appointment: appt,
+        doctor: doctorMap[appt.doctorId]!,
+      ))
+          .toList();
+
+    } catch (e) {
+      print('Error fetching appointment details: $e');
+      return [];
+    }
+  }
+  Future<void> deleteAppointment(String appointmentId) async {
+    try {
+      await _db.collection('appointments').doc(appointmentId).delete();
+      print('Appointment $appointmentId successfully deleted.');
+    } catch (e) {
+      print('Error deleting appointment: $e');
+      throw e;
+    }
+  }
   Future<void> createAppointment(Appointment appointment) async {
     try {
       // Use the appointmentId from the model as the document ID
