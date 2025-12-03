@@ -21,8 +21,8 @@ void main() async {
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(
 
-    // options: DefaultFirebaseOptions.currentPlatform, // ONLY if you used the CLI
-  );
+
+  );  
   //await FirebaseAuth.instance.getInitialUser();
   //listModels();
   runApp(const MyApp());
@@ -31,7 +31,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
 
@@ -57,7 +57,7 @@ class _BottomNavigateState extends State<BottomNavigate> {
   int myIndex = 2;
   List<Widget> _widgetList = [
 
-    Homepage(),
+    ChatScreen(),
     Askmedicine(),
     Searchdoctorpage(),
     Appointmentspage(),
