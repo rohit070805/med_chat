@@ -46,8 +46,6 @@ class DatabaseHelper {
 
   Future<String> createSession(String title) async {
     final db = await instance.database;
-    // If no ID is provided, you should generate one in the UI using Uuid()
-    // For now, we assume the UI passes a valid UUID string
     return title;
   }
 
@@ -63,6 +61,19 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getSessions() async {
     final db = await instance.database;
     return await db.query('sessions', orderBy: 'created_at DESC');
+  }
+
+  // --- NEW: Delete Method ---
+  Future<void> deleteSession(String id) async {
+    final db = await instance.database;
+    try {
+      // Delete the session entry
+      await db.delete('sessions', where: 'id = ?', whereArgs: [id]);
+      // Delete all messages associated with this session
+      await db.delete('messages', where: 'session_id = ?', whereArgs: [id]);
+    } catch (e) {
+      print("Error deleting session: $e");
+    }
   }
 
   // --- Message Methods ---
@@ -83,7 +94,7 @@ class DatabaseHelper {
       'messages',
       where: 'session_id = ?',
       whereArgs: [sessionId],
-      orderBy: 'created_at ASC', // Oldest first for history generation
+      orderBy: 'created_at ASC',
     );
   }
 }

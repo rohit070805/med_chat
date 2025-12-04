@@ -5,6 +5,7 @@ import '../utils/colors.dart';
 import 'db_helper.dart';
 import 'api_service.dart';
 
+// Define the colors as requested
 
 
 class ChatScreen extends StatefulWidget {
@@ -39,9 +40,8 @@ class _ChatScreenState extends State<ChatScreen> {
       _currentSessionId = const Uuid().v4();
       _messages = [];
     });
-    // Create an entry in DB for this session
-    DatabaseHelper.instance.insertSession(_currentSessionId, "New Chat");
-    _loadSessions();
+    // CHANGED: We do NOT save to DB here anymore.
+    // The session will be saved in _handleSendMessage when the first message is sent.
   }
 
   Future<void> _loadSessions() async {
@@ -49,6 +49,17 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _sessions = sessions;
     });
+  }
+
+  // --- NEW: Delete Session ---
+  Future<void> _deleteSession(String sessionId) async {
+    await DatabaseHelper.instance.deleteSession(sessionId);
+    await _loadSessions(); // Refresh list
+
+    // If we deleted the active session, start a new one to avoid errors
+    if (sessionId == _currentSessionId) {
+      _startNewSession();
+    }
   }
 
   Future<void> _loadSessionMessages(String sessionId, String title) async {
@@ -91,12 +102,16 @@ class _ChatScreenState extends State<ChatScreen> {
       chatMessage.text,
     );
 
-    // 2. Update Title if first message
+    // 2. Create/Update Session (Only runs on the first message of a session)
     if (_messages.length == 1) {
       String newTitle = chatMessage.text.length > 20
           ? '${chatMessage.text.substring(0, 20)}...'
           : chatMessage.text;
+
+      // This will now CREATE the session entry in the DB since we didn't do it in startNewSession
       await DatabaseHelper.instance.insertSession(_currentSessionId, newTitle);
+
+      // Refresh the drawer to show the new chat in history
       _loadSessions();
     }
 
@@ -146,9 +161,8 @@ class _ChatScreenState extends State<ChatScreen> {
       // --- CUSTOM APP BAR ---
       appBar: AppBar(
         centerTitle: true,
-        automaticallyImplyLeading: false, // As requested
+        automaticallyImplyLeading: false,
         backgroundColor: AppColors.appColor,
-        // Since automaticallyImplyLeading is false, we need a manual button to open the drawer
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu, color: AppColors.white),
@@ -169,7 +183,7 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: [
             UserAccountsDrawerHeader(
-              decoration:  BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.appColor,
               ),
               accountName: const Text("History", style: TextStyle(fontSize: 20)),
@@ -214,6 +228,33 @@ class _ChatScreenState extends State<ChatScreen> {
                         style: const TextStyle(fontSize: 12),
                       ),
                       onTap: () => _loadSessionMessages(session['id'], session['title']),
+                      // ADDED: Delete Button
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                        onPressed: () {
+                          // Show confirmation dialog before deleting
+                          showDialog(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text("Delete Chat"),
+                              content: const Text("Are you sure you want to delete this chat history?"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx),
+                                  child: const Text("Cancel"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(ctx);
+                                    _deleteSession(session['id']);
+                                  },
+                                  child: const Text("Delete", style: TextStyle(color: Colors.red)),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   );
                 },
@@ -277,7 +318,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
-                    borderSide:  BorderSide(color: AppColors.appColor, width: 1),
+                    borderSide: BorderSide(color: AppColors.appColor, width: 1),
                   ),
                 ),
               ),
